@@ -10,6 +10,7 @@ void ofxPostGlitch::setup(ofFbo *buffer_){
 	targetBuffer = buffer_;
 	buffer_size.set(buffer_->getWidth(), buffer_->getHeight());
 	ShadingBuffer.allocate(buffer_size.x,buffer_size.y);
+    newParams();
 }
 
 void ofxPostGlitch::setFbo(ofFbo *buffer_){
@@ -30,23 +31,34 @@ bool ofxPostGlitch::getFx(ofxPostGlitchType type_){
 	return bShading[type_];
 }
 
-void ofxPostGlitch::generateFx(){
+void ofxPostGlitch::newParams(){
+    for(int i = 0; i < 4; i++){
+        features_map[i] = ofRandom(4);
+        invert_param[i] = ofRandom(2);
+    }
+}
+
+void ofxPostGlitch::generateFx(std::unordered_map<std::string, float>* common_features){
 	if (targetBuffer == NULL){
 		ofLog(OF_LOG_WARNING, "ofxFboFX --- Fbo is not allocated.");
 		return;
 	}
 
-	static int step = ofRandom(4,15);
 	float v[2];
-	v[0] = ofRandom(3);v[1] = ofRandom(3);
-	if (ofGetFrameNum() % step == 0){
-		step = ofRandom(10,30);
-		ShadeVal[0] = ofRandom(100);
-		ShadeVal[2] = ofRandom(100);
-		ShadeVal[3] = ofRandom(100);
-	}
-
-	ofEnableBlendMode(OF_BLENDMODE_ALPHA);
+	v[0] = ofRandom(3);
+    v[1] = ofRandom(3);
+    
+    selected_features[0] = common_features->at("loudness") * 100.f;
+    selected_features[1] = common_features->at("specFlatness") * 100.f;
+    selected_features[2] = common_features->at("pitchConfidence") * 100.f;
+    selected_features[3] = common_features->at("specCentroid") * 100.f;
+    
+    for(int i = 0; i < 4; i++){
+        ShadeVal[i] = ((1 - selected_features[features_map[i]]) * invert_param[i]) + (selected_features[features_map[i]] * (1 - invert_param[i]));
+//        cout << " ShadeVal " << i << ": " << ShadeVal[i] << " (map: " << features_map[i] << ")";
+    }
+            
+//	ofEnableBlendMode(OF_BLENDMODE_ALPHA);
 	ofSetColor(255);
 	glClearColor(0, 0, 0, 0.0);
 

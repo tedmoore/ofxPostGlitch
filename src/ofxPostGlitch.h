@@ -72,7 +72,9 @@ public:
 	bool getFx(ofxPostGlitchType type_);
 
 	/* Apply enable effects to target Fbo */
-	void generateFx();
+    void generateFx(std::unordered_map<std::string, float>* common_features);
+    
+    void newParams();
 
 protected:
 	bool		bShading[GLITCH_NUM];
@@ -81,6 +83,9 @@ protected:
 	ofFbo		ShadingBuffer;
 	ofPoint		buffer_size;
 	float ShadeVal[4];
+    float selected_features[4];
+    int features_map[4];
+    int invert_param[4];
 };
 
 #endif /* defined(__ofxPostGlitchExample__ofxPostGlitch__) */
