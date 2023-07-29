@@ -34,7 +34,7 @@ bool ofxPostGlitch::getFx(ofxPostGlitchType type_){
 void ofxPostGlitch::newParams(){
     for(int i = 0; i < 4; i++){
         features_map[i] = ofRandom(4);
-        invert_param[i] = ofRandom(2);
+        invert_param[i] = ofRandom(1.f) < 0.5;
     }
 }
 
@@ -55,7 +55,6 @@ void ofxPostGlitch::generateFx(std::unordered_map<std::string, float>* common_fe
     
     for(int i = 0; i < 4; i++){
         ShadeVal[i] = ((1 - selected_features[features_map[i]]) * invert_param[i]) + (selected_features[features_map[i]] * (1 - invert_param[i]));
-//        cout << " ShadeVal " << i << ": " << ShadeVal[i] << " (map: " << features_map[i] << ")";
     }
             
 //	ofEnableBlendMode(OF_BLENDMODE_ALPHA);

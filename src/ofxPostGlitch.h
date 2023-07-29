@@ -9,6 +9,7 @@
 #define __ofxPostGlitchExample__ofxPostGlitch__
 
 #include "ofMain.h"
+#include "ofxYAML.h"
 
 #define GLITCH_NUM 17
 
@@ -64,17 +65,47 @@ public:
 
 	/* Switch each effects on/off */
 	void setFx(ofxPostGlitchType type_,bool enabled);
+    void setFx(int type_, bool enabled);
 
 	/* Toggle each effects on/off */
 	void toggleFx(ofxPostGlitchType type_);
 
 	/* Return current effect's enabled info*/
 	bool getFx(ofxPostGlitchType type_);
+    bool getFx(int type_);
 
 	/* Apply enable effects to target Fbo */
     void generateFx(std::unordered_map<std::string, float>* common_features);
     
     void newParams();
+    
+    ofxYAML::Node saveState(){
+        ofxYAML::Node dict;
+        
+        for(int i = 0; i < 4; i++){
+            dict["features_map" + ofToString(i)] = features_map[i];
+            dict["invert_param" + ofToString(i)] = invert_param[i];
+        }
+        
+        for(int i = 0; i < GLITCH_NUM; i++){
+            dict["bShading" + ofToString(i)] = bShading[i];
+        }
+        
+        return dict;
+    };
+    
+    void loadState(ofxYAML::Node &dict){
+        
+        for(int i = 0; i < 4; i++){
+            features_map[i] = dict["features_map" + ofToString(i)].as<int>();
+            invert_param[i] = dict["invert_param" + ofToString(i)].as<bool>();
+        }
+        
+        for(int i = 0; i < GLITCH_NUM; i++){
+            bShading[i] = dict["bShading" + ofToString(i)].as<bool>();
+        }
+        
+    };
 
 protected:
 	bool		bShading[GLITCH_NUM];
@@ -85,7 +116,8 @@ protected:
 	float ShadeVal[4];
     float selected_features[4];
     int features_map[4];
-    int invert_param[4];
+    bool invert_param[4];
+
 };
 
 #endif /* defined(__ofxPostGlitchExample__ofxPostGlitch__) */
