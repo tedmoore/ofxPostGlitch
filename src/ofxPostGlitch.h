@@ -9,7 +9,6 @@
 #define __ofxPostGlitchExample__ofxPostGlitch__
 
 #include "ofMain.h"
-#include "ofxYAML.h"
 
 #define GLITCH_NUM 17
 
@@ -79,8 +78,8 @@ public:
     
     void newParams();
     
-    ofxYAML::Node saveState(){
-        ofxYAML::Node dict;
+    nlohmann::json saveState(){
+        nlohmann::json dict;
         
         for(int i = 0; i < 4; i++){
             dict["features_map" + ofToString(i)] = features_map[i];
@@ -94,15 +93,15 @@ public:
         return dict;
     };
     
-    void loadState(ofxYAML::Node &dict){
+    void loadState(nlohmann::json &dict){
         
         for(int i = 0; i < 4; i++){
-            features_map[i] = dict["features_map" + ofToString(i)].as<int>();
-            invert_param[i] = dict["invert_param" + ofToString(i)].as<bool>();
+            features_map[i] = dict["features_map" + ofToString(i)].get<int>();
+            invert_param[i] = dict["invert_param" + ofToString(i)].get<bool>();
         }
         
         for(int i = 0; i < GLITCH_NUM; i++){
-            bShading[i] = dict["bShading" + ofToString(i)].as<bool>();
+            bShading[i] = dict["bShading" + ofToString(i)].get<bool>();
         }
         
     };
